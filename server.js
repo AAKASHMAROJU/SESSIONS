@@ -17,10 +17,18 @@ app.use(
 
 app.use(flash());
 
+app.use((req, res, next) => {
+  res.locals.success = req.flash("success");
+  res.locals.failure = req.flash("failure");
+  next();
+});
+
 app.get("/getName", (req, res) => {
   const { name = "Anonymous" } = req.query;
   req.session.name = name;
-  req.flash("success", "User Registered Successfully");
+  if (name !== "Anonymous")
+    req.flash("success", "User Registered Successfully");
+  else req.flash("failure", "User Not Registered ");
   res.send(`Heyy this is ${name}`);
 });
 
@@ -32,7 +40,7 @@ app.get("/text", (req, res) => {
 app.get("/register", (req, res) => {
   res.render("index.ejs", {
     name: req.session.name,
-    msg: req.flash("success"),
+    // msg: req.flash("success"),
   });
 });
 
